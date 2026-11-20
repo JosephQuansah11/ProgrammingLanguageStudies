@@ -6,7 +6,18 @@ export type RoadmapArea =
   | 'Languages & JVM'
   | 'Web & Automation'
   | 'Enterprise & M365'
-  | 'Analytics & Warehousing';
+  | 'Analytics & Warehousing'
+  | 'Architecture & Testing';
+
+export type AppPageId =
+  | 'studies'
+  | 'dl-vision'
+  | 'tracks'
+  | 'architecture'
+  | 'testing'
+  | 'sandbox';
+
+export type DlSubTab = 'math' | 'backprop' | 'vision' | 'code' | 'libraries';
 
 export interface RoadmapMilestone {
   id: string;
@@ -26,7 +37,8 @@ export interface RoadmapStage {
   pythonTools: string[];
   toolsSectionTitle?: string;
   focusSectionTitle?: string;
-  targetSectionId: string;
+  targetPage: AppPageId;
+  dlSubTab?: DlSubTab;
   engineeringTrackId?: string;
   milestones: RoadmapMilestone[];
   deepDiveNotes: {
@@ -49,7 +61,8 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     coreQuestion: 'How does a machine turn raw numbers into a decision boundary?',
     mathFocus: ['Dot Product: w · x + b', 'Matrix Shape Compatibility (M×N · N×K)', 'Sigmoid & ReLU Non-Linearity'],
     pythonTools: ['NumPy', 'Matplotlib'],
-    targetSectionId: 'math-foundations',
+    targetPage: 'dl-vision',
+    dlSubTab: 'math',
     milestones: [
       { id: 'm1-1', label: 'Compute a manual 3-input dot product plus bias by hand and in NumPy' },
       { id: 'm1-2', label: 'Plot Sigmoid, Tanh, and ReLU alongside their derivatives' },
@@ -75,7 +88,8 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     coreQuestion: 'How do we measure how wrong a network is across thousands of predictions?',
     mathFocus: ['Hidden Layer Projections: H = σ(XW₁ + b₁)', 'Mean Squared Error (MSE)', 'Binary & Categorical Cross-Entropy', 'Softmax Probabilities'],
     pythonTools: ['NumPy', 'scikit-learn', 'PyTorch'],
-    targetSectionId: 'implementation-guide',
+    targetPage: 'dl-vision',
+    dlSubTab: 'code',
     milestones: [
       { id: 'm2-1', label: 'Solve the XOR problem using a 2-2-1 hidden layer architecture' },
       { id: 'm2-2', label: 'Implement numerical stability for Softmax using max-subtraction' },
@@ -101,7 +115,8 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     coreQuestion: 'How does each individual weight know whether to increase or decrease to lower global error?',
     mathFocus: ['Multivariable Chain Rule', 'Local Gradients & Upstream Gradients', 'Jacobian-Vector Products (Reverse-Mode Autodiff)', 'Vanishing & Exploding Gradients'],
     pythonTools: ['NumPy (Manual Backward)', 'PyTorch Autograd'],
-    targetSectionId: 'backprop-lab',
+    targetPage: 'dl-vision',
+    dlSubTab: 'backprop',
     milestones: [
       { id: 'm3-1', label: 'Trace a full forward pass and cache intermediate activations (z, a)' },
       { id: 'm3-2', label: 'Compute ∂L/∂w₁₁ manually through two layers using the Backprop Lab' },
@@ -127,7 +142,8 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     coreQuestion: 'Why do deep networks fail to converge with naive settings, and how do practitioners stabilize them?',
     mathFocus: ['Kaiming (He) & Xavier Variance Scaling', 'SGD with Momentum & AdamW (1st/2nd Moments)', 'Batch Normalization Statistics', 'L2 Weight Decay & Dropout Scaling'],
     pythonTools: ['PyTorch', 'Weights & Biases', 'TensorFlow/Keras'],
-    targetSectionId: 'math-foundations',
+    targetPage: 'dl-vision',
+    dlSubTab: 'math',
     milestones: [
       { id: 'm4-1', label: 'Observe divergence when learning rate η exceeds curvature limits' },
       { id: 'm4-2', label: 'Implement a PyTorch training loop with AdamW and CosineAnnealingLR' },
@@ -153,7 +169,8 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     coreQuestion: 'Why do MLPs fail on images, and how do convolutional kernels learn hierarchical visual features?',
     mathFocus: ['2D Discrete Cross-Correlation (Conv2D)', 'Output Spatial Geometry: ⌊(W−K+2P)/S⌋+1', 'Translation Equivariance & Receptive Fields', 'Residual Identity Mapping: y = F(x) + x'],
     pythonTools: ['OpenCV', 'Pillow', 'torchvision', 'Albumentations', 'timm'],
-    targetSectionId: 'vision-studio',
+    targetPage: 'dl-vision',
+    dlSubTab: 'vision',
     milestones: [
       { id: 'm5-1', label: 'Draw a shape in the Vision Studio and apply Sobel edge-detection kernels' },
       { id: 'm5-2', label: 'Calculate output feature map dimensions across Conv2d and MaxPool2d layers' },
@@ -170,16 +187,17 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
   {
     id: 'stage-06',
     number: '06',
-    title: 'Expert DL Engineering & Production Serving',
+    title: 'Python ML Stack & Production Model Serving',
     area: 'Deep Learning & CV',
     level: 'Production',
     estimatedHours: '10–14 hours',
     summary:
-      'Bridge research notebooks and reliable production systems. Optimize throughput with mixed precision (AMP), graph compilation, ONNX/TensorRT export, and containerized API serving.',
+      'Bridge research notebooks and reliable production systems. Understand why every Python library is included, optimize with AMP & ONNX/TensorRT, and serve models reliably.',
     coreQuestion: 'How do you take a trained model and serve it at low latency, low memory cost, and high reliability?',
     mathFocus: ['FP16 / BF16 Dynamic Range & Loss Scaling', 'INT8 Post-Training Quantization', 'Batch Inference Throughput vs Latency Tradeoffs'],
     pythonTools: ['ONNX Runtime', 'torch.compile', 'FastAPI', 'Docker', 'MLflow'],
-    targetSectionId: 'python-ecosystem',
+    targetPage: 'dl-vision',
+    dlSubTab: 'libraries',
     milestones: [
       { id: 'm6-1', label: 'Enable Automatic Mixed Precision (torch.amp) to halve GPU VRAM usage' },
       { id: 'm6-2', label: 'Export a trained PyTorch vision model to ONNX and verify numerical parity' },
@@ -198,6 +216,35 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
   {
     id: 'stage-07',
     number: '07',
+    title: 'Python (Core, Async & Production Systems)',
+    area: 'Languages & JVM',
+    level: 'Beginner',
+    estimatedHours: '10–14 hours',
+    summary:
+      'Go beyond notebooks: master Python’s data model, type hints, dataclasses/Pydantic, async I/O, virtual environments (uv), and packaging for clean production backends.',
+    coreQuestion: 'How do engineering teams write fast, type-safe, maintainable production Python beyond scripts?',
+    focusSectionTitle: 'Core Language Mechanics',
+    toolsSectionTitle: 'Python Engineering Stack',
+    mathFocus: ['Reference Semantics, Mutability & Generators', 'Type Hints (mypy/pyright) & Pydantic Validation', 'GIL vs asyncio I/O vs multiprocessing'],
+    pythonTools: ['Python 3.12+', 'uv / Poetry', 'Pydantic', 'FastAPI', 'pytest'],
+    targetPage: 'tracks',
+    engineeringTrackId: 'python-core',
+    milestones: [
+      { id: 'm7p-1', label: 'Define validated configuration and API schemas using dataclasses and Pydantic' },
+      { id: 'm7p-2', label: 'Use generators and list comprehensions to process streams without RAM spikes' },
+      { id: 'm7p-3', label: 'Run concurrent network I/O tasks with asyncio.gather()' },
+    ],
+    deepDiveNotes: {
+      concept: 'Python as Glue Over C/Rust/CUDA',
+      intuition:
+        'Python succeeds in ML and backends because developers write readable orchestration while NumPy, PyTorch, Polars, and Pydantic v2 execute inner loops in compiled C/C++/Rust.',
+      pitfall:
+        'Using mutable default arguments (def add(items=[])) shares one list across every future function call—always default to None.',
+    },
+  },
+  {
+    id: 'stage-08',
+    number: '08',
     title: 'Java (Modern LTS): OOP, Streams & Virtual Threads',
     area: 'Languages & JVM',
     level: 'Beginner',
@@ -209,7 +256,7 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     toolsSectionTitle: 'JVM Toolchain & Frameworks',
     mathFocus: ['Stack Frames vs Generational Heap (G1/ZGC)', 'Records, Sealed Interfaces & Pattern Matching', 'Stream Pipelines & Virtual Threads (Project Loom)'],
     pythonTools: ['Java 21 LTS', 'Maven / Gradle', 'Spring Boot', 'JUnit 5'],
-    targetSectionId: 'engineering-tracks',
+    targetPage: 'tracks',
     engineeringTrackId: 'java',
     milestones: [
       { id: 'm7-1', label: 'Implement immutable data carriers using Java records and Stream filtering' },
@@ -225,8 +272,8 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     },
   },
   {
-    id: 'stage-08',
-    number: '08',
+    id: 'stage-09',
+    number: '09',
     title: 'JavaFX: Desktop Scene Graphs & Reactive Binding',
     area: 'Languages & JVM',
     level: 'Intermediate',
@@ -238,7 +285,7 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     toolsSectionTitle: 'JavaFX Ecosystem',
     mathFocus: ['Stage → Scene → Node Scene Graph Tree', 'ObservableValue & Property Data Binding', 'FX Application Thread vs Background Task<T>'],
     pythonTools: ['OpenJFX', 'FXML & SceneBuilder', 'ControlsFX', 'jpackage'],
-    targetSectionId: 'engineering-tracks',
+    targetPage: 'tracks',
     engineeringTrackId: 'javafx',
     milestones: [
       { id: 'm8-1', label: 'Build a responsive layout combining BorderPane, VBox, and GridPane' },
@@ -254,8 +301,8 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     },
   },
   {
-    id: 'stage-09',
-    number: '09',
+    id: 'stage-10',
+    number: '10',
     title: 'Akka Streams: Backpressured Reactive Pipelines',
     area: 'Languages & JVM',
     level: 'Advanced',
@@ -267,7 +314,7 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     toolsSectionTitle: 'Akka & Reactive Ecosystem',
     mathFocus: ['Demand-Driven Pull Backpressure (Reactive Streams)', 'Source → Flow → Sink Composition', 'mapAsync(parallelism) & Supervision.Decider'],
     pythonTools: ['Akka Streams', 'Alpakka Kafka', 'Akka HTTP', 'GraphDSL'],
-    targetSectionId: 'engineering-tracks',
+    targetPage: 'tracks',
     engineeringTrackId: 'akka-streams',
     milestones: [
       { id: 'm9-1', label: 'Compose reusable Source, Flow, and Sink blueprints materialized onto an ActorSystem' },
@@ -285,20 +332,20 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
 
   // === WEB & AUTOMATION TRACKS ===
   {
-    id: 'stage-10',
-    number: '10',
+    id: 'stage-11',
+    number: '11',
     title: 'JavaScript (ES2024): Event Loop, Closures & Async',
     area: 'Web & Automation',
     level: 'Beginner',
     estimatedHours: '10–14 hours',
     summary:
       'Master modern JavaScript from lexical closures and immutable array pipelines to the Event Loop microtask queue, Promise combinators, and AbortController timeouts.',
-    coreQuestion: 'How does single-threaded JavaScript execute thousands of concurrent async operations smoothly?',
+    coreQuestion: 'How do single-threaded JavaScript runtimes execute thousands of concurrent async operations smoothly?',
     focusSectionTitle: 'Language & Runtime Core',
     toolsSectionTitle: 'JavaScript Toolchain',
     mathFocus: ['Call Stack + Microtask Queue vs Macrotask Queue', 'Lexical Closures & Prototype Chains', 'Promise.allSettled & AbortController'],
     pythonTools: ['Node.js', 'ES Modules', 'Vitest', 'ESLint'],
-    targetSectionId: 'engineering-tracks',
+    targetPage: 'tracks',
     engineeringTrackId: 'javascript',
     milestones: [
       { id: 'm10-1', label: 'Aggregate and transform nested datasets with map, filter, and reduce in the Sandbox' },
@@ -314,8 +361,8 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     },
   },
   {
-    id: 'stage-11',
-    number: '11',
+    id: 'stage-12',
+    number: '12',
     title: 'React TypeScript: Typed State & Component Systems',
     area: 'Web & Automation',
     level: 'Intermediate',
@@ -327,7 +374,7 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     toolsSectionTitle: 'Frontend Production Stack',
     mathFocus: ['UI = f(state) & Virtual DOM Reconciliation', 'Discriminated Unions for Async Request States', 'useReducer, Custom Hooks & Effect Cleanup'],
     pythonTools: ['React 19', 'TypeScript', 'Vite', 'TanStack Query', 'Zod'],
-    targetSectionId: 'engineering-tracks',
+    targetPage: 'tracks',
     engineeringTrackId: 'react-typescript',
     milestones: [
       { id: 'm11-1', label: 'Build and render a live typed React TSX component inside the Code Sandbox' },
@@ -343,8 +390,8 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     },
   },
   {
-    id: 'stage-12',
-    number: '12',
+    id: 'stage-13',
+    number: '13',
     title: 'Bash Scripting: Strict Pipelines & Automation',
     area: 'Web & Automation',
     level: 'Beginner',
@@ -356,7 +403,7 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     toolsSectionTitle: 'CLI & Static Analysis',
     mathFocus: ['stdin / stdout / stderr Descriptors & Exit Codes', 'set -euo pipefail & trap cleanup EXIT', 'Pipes combining grep, awk, sed & jq'],
     pythonTools: ['Bash', 'ShellCheck', 'jq', 'awk / sed'],
-    targetSectionId: 'engineering-tracks',
+    targetPage: 'tracks',
     engineeringTrackId: 'bash-scripting',
     milestones: [
       { id: 'm12-1', label: 'Run log-triage pipelines with grep, wc, and head in the Bash Sandbox' },
@@ -372,8 +419,8 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     },
   },
   {
-    id: 'stage-13',
-    number: '13',
+    id: 'stage-14',
+    number: '14',
     title: 'Linux Administration: Systemd, Networking & Diagnostics',
     area: 'Web & Automation',
     level: 'Intermediate',
@@ -385,7 +432,7 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     toolsSectionTitle: 'Core Sysadmin Utilities',
     mathFocus: ['UID/GID Permissions, ACLs & sudoers', 'systemd Units, cgroups & journalctl Logs', 'Sockets (ss), Routing (ip) & Disk/Inode Health (df)'],
     pythonTools: ['systemd / journalctl', 'ss / ip / nftables', 'htop / iostat / vmstat', 'LVM'],
-    targetSectionId: 'engineering-tracks',
+    targetPage: 'tracks',
     engineeringTrackId: 'linux-admin',
     milestones: [
       { id: 'm13-1', label: 'Inspect systemd unit files, process tables (ps), and disk usage (df) in the Sandbox' },
@@ -403,8 +450,8 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
 
   // === ENTERPRISE & M365 TRACKS ===
   {
-    id: 'stage-14',
-    number: '14',
+    id: 'stage-15',
+    number: '15',
     title: 'PowerShell: Object Pipelines & Automation',
     area: 'Enterprise & M365',
     level: 'Beginner',
@@ -416,7 +463,7 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     toolsSectionTitle: 'PowerShell Modules',
     mathFocus: ['Typed .NET Objects vs Plain Text Streams', 'Where-Object, Select-Object & Measure-Object', 'SupportsShouldProcess (-WhatIf) & -ErrorAction Stop'],
     pythonTools: ['PowerShell 7', 'Pester', 'Microsoft.Graph', 'Az Module'],
-    targetSectionId: 'engineering-tracks',
+    targetPage: 'tracks',
     engineeringTrackId: 'powershell',
     milestones: [
       { id: 'm14-1', label: 'Filter, sort, and measure live process objects in the PowerShell Sandbox' },
@@ -432,8 +479,8 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     },
   },
   {
-    id: 'stage-15',
-    number: '15',
+    id: 'stage-16',
+    number: '16',
     title: 'SharePoint & SPFx: Information Architecture & Graph',
     area: 'Enterprise & M365',
     level: 'Intermediate',
@@ -445,7 +492,7 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     toolsSectionTitle: 'SharePoint Dev & Admin Stack',
     mathFocus: ['Hub Sites → Site Collections → Libraries → Content Types', 'Least-Privilege M365 Group Inheritance', 'SPFx React TypeScript + Microsoft Graph REST API'],
     pythonTools: ['SPFx (React + TS)', 'PnP.PowerShell', 'PnPjs', 'Microsoft Graph'],
-    targetSectionId: 'engineering-tracks',
+    targetPage: 'tracks',
     engineeringTrackId: 'sharepoint',
     milestones: [
       { id: 'm15-1', label: 'Design reusable Site Columns and Content Types instead of flat folder hierarchies' },
@@ -463,8 +510,8 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
 
   // === ANALYTICS & DATA WAREHOUSING TRACKS ===
   {
-    id: 'stage-16',
-    number: '16',
+    id: 'stage-17',
+    number: '17',
     title: 'Business Analytics: KPI Trees, Cohorts & Experiments',
     area: 'Analytics & Warehousing',
     level: 'Beginner',
@@ -476,7 +523,7 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     toolsSectionTitle: 'BI & Experimentation Stack',
     mathFocus: ['North Star Metric Driver Decomposition', 'Cohort Retention & Net Dollar Retention', 'Statistical Power, p-Values & Confidence Intervals'],
     pythonTools: ['SQL', 'Power BI / Looker', 'SciPy Stats', 'Excel / Sheets'],
-    targetSectionId: 'engineering-tracks',
+    targetPage: 'tracks',
     engineeringTrackId: 'business-analytics',
     milestones: [
       { id: 'm16-1', label: 'Run segment revenue and average-order-value queries in the SQL Sandbox' },
@@ -492,8 +539,8 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     },
   },
   {
-    id: 'stage-17',
-    number: '17',
+    id: 'stage-18',
+    number: '18',
     title: 'Data Analytics: SQL Windows, EDA & Data Quality',
     area: 'Analytics & Warehousing',
     level: 'Intermediate',
@@ -505,7 +552,7 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     toolsSectionTitle: 'Analytics Toolchain',
     mathFocus: ['Window Functions: ROW_NUMBER, LAG & Rolling Sums', 'Quantiles, IQR Outliers & Missingness Audits', 'Cardinality Checks Preventing Many-to-Many Fan-Outs'],
     pythonTools: ['SQL', 'DuckDB / Polars', 'Pandas', 'Pandera'],
-    targetSectionId: 'engineering-tracks',
+    targetPage: 'tracks',
     engineeringTrackId: 'data-analytics',
     milestones: [
       { id: 'm17-1', label: 'Join fact_orders and dim_products to rank top revenue drivers in the SQL Sandbox' },
@@ -521,8 +568,8 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     },
   },
   {
-    id: 'stage-18',
-    number: '18',
+    id: 'stage-19',
+    number: '19',
     title: 'Data Warehousing: Star Schema, SCD2 & OLAP Engines',
     area: 'Analytics & Warehousing',
     level: 'Production',
@@ -534,7 +581,7 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
     toolsSectionTitle: 'Modern Data Stack',
     mathFocus: ['Kimball Star Schema (Fact Grain + Conformed Dims)', 'Slowly Changing Dimensions Type 2 (valid_from/to)', 'Columnar Compression, Partitioning & Clustering'],
     pythonTools: ['dbt', 'Snowflake / BigQuery', 'Apache Iceberg / Parquet', 'DuckDB'],
-    targetSectionId: 'engineering-tracks',
+    targetPage: 'tracks',
     engineeringTrackId: 'data-warehousing',
     milestones: [
       { id: 'm18-1', label: 'Execute a 3-way Star Schema join (fact + dim_date + dim_customers) in the SQL Sandbox' },
@@ -547,6 +594,64 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
         'Postgres (OLTP) stores all columns of one row together for fast checkout writes. Columnar warehouses (Parquet/Snowflake) store each column contiguously, reading only the 3 columns a query asks for instead of all 120.',
       pitfall:
         'Overwriting customer tier/region in place (SCD Type 1) rewrites historical quarterly reports whenever an account upgrades—use SCD Type 2 for auditable history.',
+    },
+  },
+
+  // === ARCHITECTURE & TESTING ===
+  {
+    id: 'stage-20',
+    number: '20',
+    title: 'Design Architecture: Boundaries, Trade-Offs & Scale',
+    area: 'Architecture & Testing',
+    level: 'Advanced',
+    estimatedHours: '10–14 hours',
+    summary:
+      'Understand why intentional architecture prevents feature velocity collapse, why clean boundaries matter, and exactly when to choose Modular Monolith, Hexagonal, Event-Driven, or Microservices.',
+    coreQuestion: 'Why does software slow down over time without architecture, and when should you introduce distributed boundaries?',
+    focusSectionTitle: 'Architectural Principles',
+    toolsSectionTitle: 'Patterns & Decision Tools',
+    mathFocus: ['High Cohesion & Loose Coupling (Ports & Adapters)', 'Modular Monolith vs Microservices vs Event-Driven', 'Backpressure, Circuit Breakers & CAP Trade-Offs'],
+    pythonTools: ['ADR (Architecture Decision Records)', 'C4 Diagrams', 'Kafka / Akka', 'FastAPI / Spring'],
+    targetPage: 'architecture',
+    milestones: [
+      { id: 'm19-1', label: 'Compare Ad-Hoc vs Intentional Architecture feature velocity in the Architecture page' },
+      { id: 'm19-2', label: 'Use the When-to-Use Decision Matrix for an MVP vs Multi-Team ML Platform' },
+      { id: 'm19-3', label: 'Separate domain logic from database/API adapters using Ports & Adapters' },
+    ],
+    deepDiveNotes: {
+      concept: 'Architecture Protects Change Velocity',
+      intuition:
+        'Good architecture isn’t about drawing complex boxes—it isolates parts of the system that change for different reasons so changing a database, ML runtime, or UI never triggers a cascade of rewrites.',
+      pitfall:
+        'Premature Microservices on a 4-person team trades clean function calls for network latency, distributed debugging, and partial-failure complexity.',
+    },
+  },
+  {
+    id: 'stage-21',
+    number: '21',
+    title: 'Testing Phases: From Unit Checks to ML & Production Gates',
+    area: 'Architecture & Testing',
+    level: 'Production',
+    estimatedHours: '10–12 hours',
+    summary:
+      'Discover why testing is essential through the 1× → 10× → 100× defect cost curve, and master all 6 testing phases: Static, Unit/Gradient, Integration/Contract, E2E, Load, and ML/Data Validation.',
+    coreQuestion: 'Why does skipping early testing multiply engineering cost 100× in production?',
+    focusSectionTitle: 'Quality Engineering Phases',
+    toolsSectionTitle: 'Testing Frameworks by Stack',
+    mathFocus: ['Static & Type Checks (mypy, tsc, ShellCheck)', 'Unit, Gradient & Property Tests (pytest, JUnit 5, Vitest)', 'Contract, E2E, Load (p99) & ML Slice Validation'],
+    pythonTools: ['pytest', 'JUnit 5', 'Vitest', 'Playwright', 'dbt test', 'Pester'],
+    targetPage: 'testing',
+    milestones: [
+      { id: 'm20-1', label: 'Inspect the 6 Testing Phases and defect cost multiplier in the Testing page' },
+      { id: 'm20-2', label: 'Run a Python neural-net gradient & shape unit test live in the Code Sandbox' },
+      { id: 'm20-3', label: 'Verify PyTorch-to-ONNX numerical parity and dbt schema contracts in CI' },
+    ],
+    deepDiveNotes: {
+      concept: 'Tests Enable Fearless Refactoring',
+      intuition:
+        'Without automated tests, engineers become terrified to touch legacy code or upgrade libraries because any subtle regression ships straight to customers. Fast deterministic unit + contract suites turn deployments into routine non-events.',
+      pitfall:
+        'Building an "Ice Cream Cone" anti-pattern (hundreds of slow brittle UI tests, zero unit/contract tests)—aim for fast unit/contract coverage at the base and targeted E2E journeys at the top.',
     },
   },
 ];

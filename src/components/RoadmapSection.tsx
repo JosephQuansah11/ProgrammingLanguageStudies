@@ -1,12 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { ArrowUpRight, CheckSquare, Square } from 'lucide-react';
-import { MasteryLevel, ROADMAP_STAGES, RoadmapArea } from '../data/roadmapData';
+import { MasteryLevel, ROADMAP_STAGES, RoadmapArea, RoadmapStage } from '../data/roadmapData';
 
 interface RoadmapSectionProps {
   completedMilestones: Record<string, boolean>;
   onToggleMilestone: (id: string) => void;
-  onNavigate: (sectionId: string) => void;
-  onOpenEngineeringTrack: (trackId: string) => void;
+  onOpenStageTarget: (stage: RoadmapStage) => void;
 }
 
 const AREAS: RoadmapArea[] = [
@@ -16,6 +15,7 @@ const AREAS: RoadmapArea[] = [
   'Web & Automation',
   'Enterprise & M365',
   'Analytics & Warehousing',
+  'Architecture & Testing',
 ];
 
 const LEVELS: Array<'All' | MasteryLevel> = [
@@ -30,8 +30,7 @@ const LEVELS: Array<'All' | MasteryLevel> = [
 export const RoadmapSection: React.FC<RoadmapSectionProps> = ({
   completedMilestones,
   onToggleMilestone,
-  onNavigate,
-  onOpenEngineeringTrack,
+  onOpenStageTarget,
 }) => {
   const [selectedArea, setSelectedArea] = useState<RoadmapArea>('All');
   const [selectedLevel, setSelectedLevel] = useState<'All' | MasteryLevel>('All');
@@ -48,29 +47,21 @@ export const RoadmapSection: React.FC<RoadmapSectionProps> = ({
   const activeStage =
     filteredStages.find((s) => s.id === activeStageId) ?? filteredStages[0] ?? ROADMAP_STAGES[0];
 
-  const handleOpenModule = () => {
-    if (activeStage.engineeringTrackId) {
-      onOpenEngineeringTrack(activeStage.engineeringTrackId);
-    } else {
-      onNavigate(activeStage.targetSectionId);
-    }
-  };
-
   return (
-    <section id="roadmap" className="border-b border-slate-200 bg-slate-50 py-16">
+    <section id="roadmap" className="bg-slate-50 py-14">
       <div className="mx-auto max-w-[1360px] px-6">
         <div className="flex flex-col gap-5 border-b border-slate-200 pb-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
               <p className="text-xs font-medium text-sky-700">
-                Complete Studies Map · 18 Progressive Modules
+                Complete Studies Map · {ROADMAP_STAGES.length} Progressive Modules
               </p>
               <h2 className="font-display mt-2 text-3xl font-bold tracking-tight text-slate-900">
-                From neural network math to languages, systems, and warehousing
+                From neural network math to languages, architecture, and testing
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                Filter by curriculum area or skill level. Every stage tracks hands-on milestones,
-                core mental models, production tooling, and common pitfalls.
+                Filter by curriculum area or skill level. Every stage opens into its own dedicated
+                interactive study page or hands-on sandbox.
               </p>
             </div>
 
@@ -106,7 +97,6 @@ export const RoadmapSection: React.FC<RoadmapSectionProps> = ({
             </div>
           </div>
 
-          {/* Curriculum Area Filter Row */}
           <div
             role="tablist"
             aria-label="Filter studies map by curriculum area"
@@ -156,7 +146,7 @@ export const RoadmapSection: React.FC<RoadmapSectionProps> = ({
               }}
               className="font-semibold text-sky-700 underline underline-offset-2 cursor-pointer"
             >
-              Show all 18 stages
+              Show all {ROADMAP_STAGES.length} stages
             </button>
           </div>
         ) : (
@@ -211,12 +201,10 @@ export const RoadmapSection: React.FC<RoadmapSectionProps> = ({
                 </div>
                 <button
                   type="button"
-                  onClick={handleOpenModule}
+                  onClick={() => onOpenStageTarget(activeStage)}
                   className="inline-flex items-center gap-1.5 rounded-lg bg-sky-700 px-4 py-2 text-xs font-semibold text-white hover:bg-sky-800 transition-colors whitespace-nowrap shrink-0 cursor-pointer"
                 >
-                  <span>
-                    {activeStage.engineeringTrackId ? 'Open Track & Code' : 'Open Interactive Module'}
-                  </span>
+                  <span>Open Dedicated Page</span>
                   <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>
               </div>

@@ -1,6 +1,6 @@
 export type EngineeringCategory =
   | 'All'
-  | 'JVM & Streaming'
+  | 'Python, JVM & Streaming'
   | 'Web & Frontend'
   | 'Shell & Linux Admin'
   | 'Enterprise & M365'
@@ -24,15 +24,70 @@ export interface EngineeringTrack {
   codeTitle: string;
   codeLanguage: string;
   code: string;
-  sandboxMode?: 'javascript' | 'typescript' | 'react-tsx' | 'sql' | 'bash' | 'powershell';
+  sandboxMode?: 'python' | 'javascript' | 'typescript' | 'react-tsx' | 'sql' | 'bash' | 'powershell';
   sandboxPresetId?: string;
 }
 
 export const ENGINEERING_TRACKS: EngineeringTrack[] = [
   {
+    id: 'python-core',
+    name: 'Python (Core, Async & Production)',
+    category: 'Python, JVM & Streaming',
+    levelRange: 'Beginner to Production',
+    summary:
+      'Readable, dynamically typed language powering ML/AI orchestration, FastAPI backends, data engineering, and automation.',
+    coreMentalModel:
+      'Everything is a first-class object bound by reference. While CPython’s GIL serializes pure-Python bytecode per process, C/Rust extensions (NumPy, PyTorch, Polars) release the GIL for parallel native execution, and asyncio multiplexes thousands of I/O sockets in one thread.',
+    whyIndustryUsesIt:
+      'Unmatched speed of iteration combined with C/CUDA performance via native bindings, rich typing via Pydantic/mypy, and universal adoption across ML, analytics, and DevOps.',
+    keyTools: [
+      {
+        name: 'uv / Poetry + venv',
+        whyIncluded: 'Locks exact transitive dependency hashes so builds behave identically on laptops and CI/production.',
+      },
+      {
+        name: 'Pydantic v2 + mypy',
+        whyIncluded: 'Validates untrusted JSON/config schemas in Rust speed and catches type mismatches before runtime.',
+      },
+      {
+        name: 'pytest + FastAPI',
+        whyIncluded: 'Clean fixture-based testing paired with async ASGI web APIs and automatic OpenAPI docs.',
+      },
+    ],
+    roadmapSteps: [
+      'Master data structures (list, dict, set, tuple), comprehensions, generators, and context managers (with).',
+      'Adopt modern type annotations (list[str], Protocol, dataclass) and check them statically with mypy/pyright.',
+      'Separate CPU-bound work (multiprocessing / NumPy C-kernels) from I/O-bound concurrency (asyncio).',
+      'Structure packages cleanly with pyproject.toml, Pydantic settings, structured logging, and pytest suites.',
+    ],
+    codeTitle: 'Python Data Validation, Class & Generator Pipeline',
+    codeLanguage: 'python',
+    code: `# Run directly in the Python Sandbox!
+class MetricTracker:
+    def __init__(self, name):
+        self.name = name
+        self.values = []
+
+    def record(self, val):
+        self.values.append(val)
+
+    def summary(self):
+        avg = sum(self.values) / len(self.values)
+        return f"{self.name}: n={len(self.values)}, avg={avg:.3f}, max={max(self.values):.3f}"
+
+tracker = MetricTracker("val_loss")
+for step, loss in enumerate([0.82, 0.54, 0.31, 0.19]):
+    tracker.record(loss)
+    print(f"Step {step}: loss={loss:.2f}")
+
+print(tracker.summary())`,
+    sandboxMode: 'python',
+    sandboxPresetId: 'py-numpy-xor',
+  },
+  {
     id: 'java',
     name: 'Java (Modern LTS)',
-    category: 'JVM & Streaming',
+    category: 'Python, JVM & Streaming',
     levelRange: 'Beginner to Production',
     summary:
       'Strongly typed, JIT-compiled JVM language powering high-throughput financial backends, microservices, and big-data engines.',
@@ -95,7 +150,7 @@ public class OrderPipeline {
   {
     id: 'akka-streams',
     name: 'Akka Streams',
-    category: 'JVM & Streaming',
+    category: 'Python, JVM & Streaming',
     levelRange: 'Intermediate to Production',
     summary:
       'Reactive Streams engine on the JVM for bounded-memory, backpressured, concurrent data pipelines.',
@@ -153,7 +208,7 @@ public class TelemetryStream {
   {
     id: 'javafx',
     name: 'JavaFX',
-    category: 'JVM & Streaming',
+    category: 'Python, JVM & Streaming',
     levelRange: 'Beginner to Production',
     summary:
       'Hardware-accelerated desktop UI framework for the JVM featuring reactive property binding, CSS styling, and FXML.',

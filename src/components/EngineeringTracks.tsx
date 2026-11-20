@@ -14,7 +14,7 @@ interface EngineeringTracksProps {
 
 const CATEGORIES: EngineeringCategory[] = [
   'All',
-  'JVM & Streaming',
+  'Python, JVM & Streaming',
   'Web & Frontend',
   'Shell & Linux Admin',
   'Enterprise & M365',
@@ -62,13 +62,13 @@ export const EngineeringTracks: React.FC<EngineeringTracksProps> = ({
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between border-b border-slate-200 pb-6">
           <div className="max-w-2xl">
             <p className="text-xs font-medium text-sky-700">
-              Full-Stack Systems, Enterprise &amp; Analytics · 12 Engineering Tracks
+              Full-Stack Languages, Systems, Enterprise &amp; Analytics · {ENGINEERING_TRACKS.length} Detailed Tracks
             </p>
-            <h2 className="font-display mt-2 text-3xl font-bold tracking-tight text-slate-900">
-              Java, Web, Linux, SharePoint, and Analytics Warehousing
-            </h2>
+            <h1 className="font-display mt-2 text-3xl font-bold tracking-tight text-slate-900">
+              Python, Java, Web, Linux, SharePoint, and Analytics Warehousing
+            </h1>
             <p className="mt-2 text-sm leading-relaxed text-slate-600">
-              Every production ML and software platform relies on surrounding systems: JVM services,
+              Every production ML and software platform relies on surrounding systems: Python &amp; JVM services,
               reactive streams, TypeScript frontends, Linux/PowerShell automation, enterprise M365, and
               dimensional data warehouses.
             </p>
