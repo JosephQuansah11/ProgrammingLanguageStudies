@@ -105,7 +105,7 @@ export default function App() {
         <MathFoundations />
         <BackpropLab />
         <VisionStudio />
-        <ImplementationGuide />
+        <ImplementationGuide onLoadInSandbox={handleLoadInSandbox} />
         <PythonEcosystem />
         <EngineeringTracks
           onLoadInSandbox={handleLoadInSandbox}

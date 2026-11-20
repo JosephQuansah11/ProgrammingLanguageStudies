@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
-import { Check, Copy } from 'lucide-react';
+import { Check, Copy, Play } from 'lucide-react';
 import { CODE_TRACKS } from '../data/codeTracksData';
+import type { SandboxMode } from './CodeSandbox';
 
-export const ImplementationGuide: React.FC = () => {
+interface ImplementationGuideProps {
+  onLoadInSandbox?: (mode: SandboxMode, code: string, label: string) => void;
+}
+
+export const ImplementationGuide: React.FC<ImplementationGuideProps> = ({ onLoadInSandbox }) => {
   const [activeTrackId, setActiveTrackId] = useState<string>(CODE_TRACKS[0].id);
   const [activeStepIdx, setActiveStepIdx] = useState<number>(0);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -18,6 +23,13 @@ export const ImplementationGuide: React.FC = () => {
     } catch {
       // Fallback ignored if clipboard blocked
     }
+  };
+
+  const handleRunNumpyInSandbox = () => {
+    if (!onLoadInSandbox) return;
+    // Combine steps 1..activeStepIdx+1 (or all 3 steps) so initialization + forward + backprop run cleanly together
+    const combined = track.steps.map((s) => s.code).join('\n\n');
+    onLoadInSandbox('python', combined, 'Pure NumPy Neural Net');
   };
 
   return (
@@ -109,23 +121,35 @@ export const ImplementationGuide: React.FC = () => {
                     {step.title}
                   </h4>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => handleCopy(step.code, `${track.id}-${step.stepNumber}`)}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
-                >
-                  {copiedId === `${track.id}-${step.stepNumber}` ? (
-                    <>
-                      <Check className="h-3.5 w-3.5 text-emerald-700" aria-hidden="true" />
-                      <span className="text-emerald-700">Copied</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-3.5 w-3.5" aria-hidden="true" />
-                      <span>Copy Code</span>
-                    </>
+                <div className="flex items-center gap-2">
+                  {track.id === 'numpy-scratch' && onLoadInSandbox && (
+                    <button
+                      type="button"
+                      onClick={handleRunNumpyInSandbox}
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-sky-700 px-3.5 py-2 text-xs font-semibold text-white hover:bg-sky-800 transition-colors cursor-pointer"
+                    >
+                      <Play className="h-3.5 w-3.5" aria-hidden="true" />
+                      <span>Run in Python Sandbox</span>
+                    </button>
                   )}
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(step.code, `${track.id}-${step.stepNumber}`)}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+                  >
+                    {copiedId === `${track.id}-${step.stepNumber}` ? (
+                      <>
+                        <Check className="h-3.5 w-3.5 text-emerald-700" aria-hidden="true" />
+                        <span className="text-emerald-700">Copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-3.5 w-3.5" aria-hidden="true" />
+                        <span>Copy Code</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
 
               <p className="text-sm leading-relaxed text-slate-600">{step.explanation}</p>

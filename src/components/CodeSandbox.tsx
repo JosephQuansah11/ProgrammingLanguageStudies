@@ -12,8 +12,10 @@ import {
   VirtualFs,
   WAREHOUSE_TABLES,
 } from '../utils/sandboxEngines';
+import { runPythonScript } from '../utils/pythonRunner';
 
 export type SandboxMode =
+  | 'python'
   | 'javascript'
   | 'typescript'
   | 'react-tsx'
@@ -29,6 +31,54 @@ interface SandboxPreset {
 }
 
 export const SANDBOX_PRESETS: SandboxPreset[] = [
+  {
+    id: 'py-numpy-xor',
+    mode: 'python',
+    label: 'Python · NumPy XOR Neural Net',
+    code: `import numpy as np
+
+# Train a 2-4-1 Neural Network on XOR from scratch
+rng = np.random.default_rng(42)
+X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+y = np.array([[0], [1], [1], [0]])
+
+W1 = rng.normal(0.0, 0.8, (2, 4))
+b1 = np.zeros((1, 4))
+W2 = rng.normal(0.0, 0.8, (4, 1))
+b2 = np.zeros((1, 1))
+
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+lr = 0.8
+for epoch in range(601):
+    # Forward pass
+    z1 = X @ W1 + b1
+    a1 = np.tanh(z1)
+    z2 = a1 @ W2 + b2
+    y_hat = sigmoid(z2)
+
+    loss = -np.mean(y * np.log(y_hat + 1e-8) + (1 - y) * np.log(1 - y_hat + 1e-8))
+
+    # Backward pass (Chain Rule)
+    dz2 = (y_hat - y) / 4
+    dW2 = a1.T @ dz2
+    db2 = np.sum(dz2, axis=0, keepdims=True)
+    da1 = dz2 @ W2.T
+    dz1 = da1 * (1 - a1 ** 2)
+    dW1 = X.T @ dz1
+    db1 = np.sum(dz1, axis=0, keepdims=True)
+
+    W1 -= lr * dW1
+    b1 -= lr * db1
+    W2 -= lr * dW2
+    b2 -= lr * db2
+
+    if epoch % 150 == 0:
+        print(f"Epoch {epoch:3d} | BCE Loss: {loss:.5f}")
+
+print("Final Predictions:", y_hat.T)`,
+  },
   {
     id: 'ts-perceptron',
     mode: 'typescript',
@@ -273,6 +323,7 @@ interface CodeSandboxProps {
 }
 
 const MODE_LABELS: { id: SandboxMode; label: string }[] = [
+  { id: 'python', label: 'Python (NumPy)' },
   { id: 'typescript', label: 'TypeScript' },
   { id: 'javascript', label: 'JavaScript' },
   { id: 'react-tsx', label: 'React TSX' },
@@ -282,7 +333,7 @@ const MODE_LABELS: { id: SandboxMode; label: string }[] = [
 ];
 
 export const CodeSandbox: React.FC<CodeSandboxProps> = ({ externalRequest }) => {
-  const [mode, setMode] = useState<SandboxMode>('typescript');
+  const [mode, setMode] = useState<SandboxMode>('python');
   const [code, setCode] = useState<string>(SANDBOX_PRESETS[0].code);
   const [statusMeta, setStatusMeta] = useState<string>('Ready');
 
@@ -298,7 +349,12 @@ export const CodeSandbox: React.FC<CodeSandboxProps> = ({ externalRequest }) => 
 
   const executeCode = (targetMode: SandboxMode, sourceCode: string) => {
     setExecError(null);
-    if (targetMode === 'javascript' || targetMode === 'typescript') {
+    if (targetMode === 'python') {
+      const res = runPythonScript(sourceCode);
+      setConsoleLogs(res.logs);
+      setExecError(res.error);
+      setStatusMeta(res.error ? 'Python error' : `Executed in ${res.elapsedMs} ms`);
+    } else if (targetMode === 'javascript' || targetMode === 'typescript') {
       const res = runJavaScriptOrTs(sourceCode, targetMode === 'typescript');
       setConsoleLogs(res.logs);
       setExecError(res.error);
@@ -328,7 +384,7 @@ export const CodeSandbox: React.FC<CodeSandboxProps> = ({ externalRequest }) => 
 
   // Run initial preset once on mount
   useEffect(() => {
-    executeCode('typescript', SANDBOX_PRESETS[0].code);
+    executeCode('python', SANDBOX_PRESETS[0].code);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -496,7 +552,7 @@ export const CodeSandbox: React.FC<CodeSandboxProps> = ({ externalRequest }) => 
               </div>
               <div className="flex items-center gap-3 font-mono text-[11px] text-slate-500 tabular-nums">
                 <span>{statusMeta}</span>
-                {(mode === 'javascript' || mode === 'typescript') && (
+                {(mode === 'python' || mode === 'javascript' || mode === 'typescript') && (
                   <button
                     type="button"
                     onClick={() => setConsoleLogs([])}
@@ -517,11 +573,15 @@ export const CodeSandbox: React.FC<CodeSandboxProps> = ({ externalRequest }) => 
                 </div>
               )}
 
-              {/* JS / TS Console Output */}
-              {(mode === 'javascript' || mode === 'typescript') && (
+              {/* Python / JS / TS Console Output */}
+              {(mode === 'python' || mode === 'javascript' || mode === 'typescript') && (
                 <div className="space-y-1.5 font-mono text-xs">
                   {consoleLogs.length === 0 && !execError ? (
-                    <div className="text-slate-400">No console output produced. Use console.log(...) to inspect values.</div>
+                    <div className="text-slate-400">
+                      {mode === 'python'
+                        ? 'No output produced. Use print(...) to inspect values.'
+                        : 'No console output produced. Use console.log(...) to inspect values.'}
+                    </div>
                   ) : (
                     consoleLogs.map((entry, idx) => (
                       <div
