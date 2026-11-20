@@ -1,0 +1,6 @@
+{
+  "name": "Neural & Vision Lab",
+  "description": "An interactive deep learning and computer vision engineering workbench covering neural network mathematics, live backpropagation visualizations, end-to-end CNN pipelines, and industry-standard Python libraries.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
